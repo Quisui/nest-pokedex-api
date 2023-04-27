@@ -9,6 +9,7 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
@@ -26,8 +27,19 @@ export class PokemonService {
     }
   }
 
-  async findAll(): Promise<Pokemon[]> {
-    return await this.pokemonModel.find();
+  async createBulk(createPokemonDto: CreatePokemonDto[]): Promise<Pokemon[]> {
+    try {
+      const pokemon = await this.pokemonModel.insertMany(createPokemonDto);
+      return pokemon;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
+  }
+
+  async findAll(paginationDto?: PaginationDto): Promise<Pokemon[]> {
+    const limit = paginationDto?.limit ?? 10;
+    const offset = paginationDto?.offset ?? 0;
+    return await this.pokemonModel.find().skip(offset).limit(limit);
   }
 
   async findOne(id: string): Promise<Pokemon> {
@@ -80,6 +92,10 @@ export class PokemonService {
     if (!deletedPokemon) {
       throw new NotFoundException(`Pokemon with id ${id} does not exist`);
     }
+  }
+
+  async removeAll() {
+    await this.pokemonModel.deleteMany({});
   }
 
   private handleExceptions(error: any) {
