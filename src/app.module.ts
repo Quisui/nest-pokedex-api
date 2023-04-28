@@ -8,6 +8,7 @@ import { SeedModule } from './seed/seed.module';
 import { ConfigModule } from '@nestjs/config';
 import { EnvConfiguration } from './config/env.config';
 import { JoiValidationSchema } from './config/joi.validation';
+import { BulbaModule } from './bulba/bulba.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JoiValidationSchema } from './config/joi.validation';
     PokemonModule,
     CommonModule,
     SeedModule,
+    BulbaModule,
   ],
   controllers: [],
   providers: [],
